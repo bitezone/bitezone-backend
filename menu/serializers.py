@@ -1,11 +1,19 @@
-
 from rest_framework import serializers
+from .models import MenuItems, MenuItemsAssociation, Menus
 
-from menu.models import Menu
-
-class MenuSerializer(serializers.ModelSerializer):
-    
+class MenuItemsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Menu
-        fields = ['name', 'price', 'created', 'updated', 'id']
-        read_only_fields = ['created', 'updated', 'id']
+        model = MenuItems
+        fields = '__all__'
+
+
+class MenuItemsAssociationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItemsAssociation
+        fields = '__all__'
+
+
+class MenusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menus
+        fields = '__all__'
