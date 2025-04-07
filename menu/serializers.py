@@ -29,3 +29,10 @@ class MenuSerializer(serializers.ModelSerializer):
         associations = MenuItemsAssociation.objects.filter(menu=menu)
         # Use the serializer that includes item details
         return MenuItemInMenuSerializer(associations, many=True).data
+
+class MenuBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menus
+        fields = ['id', 'date', 'meal_time', 'meal_location']
+        
+        

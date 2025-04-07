@@ -1,7 +1,9 @@
 from rest_framework import viewsets
 from .models import Menus
-from .serializers import MenuSerializer
+from .serializers import MenuSerializer, MenuBasicSerializer
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.utils.dateparse import parse_datetime
 
 
@@ -46,7 +48,7 @@ class MenuViewSet(viewsets.ReadOnlyModelViewSet):
                     }
                 )
             queryset = queryset.filter(meal_time__iexact=meal_time)
-        
+
         if meal_location:
             valid_meal_locations = (
                 Menus.objects.order_by("meal_location")
@@ -71,3 +73,47 @@ class MenuViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(meal_location=found_location)
 
         return queryset
+
+    @action(detail=False, methods=["get"])
+    def get_menu_times(self, request):
+        date_str = request.query_params.get("date", None)
+        meal_location = self.request.query_params.get("meal_location", None)
+        menus = Menus.objects.all()
+        if not date_str:
+            return Response({"error": "Date parameter is required"}, status=400)
+
+        parsed_date = parse_datetime(date_str)
+        if not parsed_date:
+            return Response(
+                {
+                    "error": "Invalid date format. Use ISO 8601 format: 'YYYY-MM-DDTHH:MM:SSZ'"
+                },
+                status=400,
+            )
+
+        # Filter menus by the parsed date
+        menus = menus.filter(date__date=parsed_date.date())
+
+        if not meal_location:
+            return Response(
+                {"error": "Meal Location parameter is required"}, status=400
+            )
+
+        valid_meal_locations = (
+            Menus.objects.order_by("meal_location")
+            .values_list("meal_location", flat=True)
+            .distinct()
+        )
+
+        found_location = None
+        for location in valid_meal_locations:
+            if meal_location.lower() == location.lower():
+                found_location = location
+                break
+
+        menus = menus.filter(meal_location=found_location)
+
+        # Use the basic serializer that doesn't include menu items
+        serializer = MenuBasicSerializer(menus, many=True)
+
+        return Response(serializer.data)
