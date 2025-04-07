@@ -1,45 +1,73 @@
 from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from .models import Menus
+from .serializers import MenuSerializer
+from rest_framework.exceptions import ValidationError
+from django.utils.dateparse import parse_datetime
 
-from .models import Menus, MenuItems, MenuItemsAssociation
-from .serializers import MenusSerializer, MenuItemsSerializer, MenuItemsAssociationSerializer
 
-
-class MenusViewSet(viewsets.ReadOnlyModelViewSet):
+class MenuViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet for retrieving Menus.
-    Includes a custom action 'items' to get associated MenuItems via MenuItemsAssociation.
+    ViewSet for retrieving menus with their associated menu items.
     """
+
     queryset = Menus.objects.all()
-    serializer_class = MenusSerializer
+    serializer_class = MenuSerializer
 
-    @action(detail=True, methods=['get'])
-    def items(self, request, pk=None):
-        """
-        Returns all MenuItems for the given Menu.
-        It does so by finding all MenuItemsAssociation entries for the menu,
-        and then extracting the corresponding MenuItems.
-        """
-        menu = self.get_object()
-        associations = MenuItemsAssociation.objects.filter(menu=menu)
-        menu_items = [assoc.menu_item for assoc in associations]
-        serializer = MenuItemsSerializer(menu_items, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
 
+        queryset = Menus.objects.all()
 
-class MenuItemsViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet for retrieving all MenuItems.
-    """
-    queryset = MenuItems.objects.all()
-    serializer_class = MenuItemsSerializer
+        date_str = self.request.query_params.get("date", None)
+        meal_time = self.request.query_params.get("meal_time", None)
+        meal_location = self.request.query_params.get("meal_location", None)
 
+        if date_str:
+            parsed_date = parse_datetime(date_str)
+            if not parsed_date:
+                raise ValidationError(
+                    {
+                        "error": "Invalid date format. Use ISO 8601 format: 'YYYY-MM-DDTHH:MM:SSZ'"
+                    }
+                )
+            queryset = queryset.filter(date=parsed_date.date())
 
-class MenuItemsAssociationViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet for retrieving MenuItemsAssociation entries.
-    """
-    
-    queryset = MenuItemsAssociation.objects.raw("SELECT * FROM menu_items_association")
-    serializer_class = MenuItemsAssociationSerializer
+        if meal_time:
+            valid_menu_times = (
+                Menus.objects.order_by("meal_time")
+                .values_list("meal_time", flat=True)
+                .distinct()
+            )
+            if meal_time.lower() not in [val.lower() for val in valid_menu_times]:
+                raise ValidationError(
+                    {
+                        "error",
+                        "Invalid menu time. Please select only from the following-"
+                        + ", ".join(valid_menu_times),
+                    }
+                )
+            queryset = queryset.filter(meal_time__iexact=meal_time)
+        
+        if meal_location:
+            valid_meal_locations = (
+                Menus.objects.order_by("meal_location")
+                .values_list("meal_location", flat=True)
+                .distinct()
+            )
+
+            found_location = None
+            for location in valid_meal_locations:
+                if meal_location.lower() == location.lower():
+                    found_location = location
+                    break
+
+            if not found_location:
+                raise ValidationError(
+                    {
+                        "error",
+                        "Invalid menu location. Please select only from the following-"
+                        + ", ".join(valid_meal_locations),
+                    }
+                )
+            queryset = queryset.filter(meal_location=found_location)
+
+        return queryset
