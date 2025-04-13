@@ -20,7 +20,7 @@ from django.urls import path, include
 
 from routers import router
 
-from accounts.views import GoogleLogin, GoogleLoginCallBackView
+from accounts.views import GoogleLogin, GoogleCodeExchangeView
 from django.urls import include, path, re_path
 
 urlpatterns = [
@@ -32,8 +32,8 @@ urlpatterns = [
     path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/v1/auth/google/", GoogleLogin.as_view(), name="google_login"),
     path(
-        "api/v1/auth/google/callback/",
-        GoogleLoginCallBackView.as_view(),
-        name="google_login_callback",
+        "api/v1/auth/google/exchange-code/",
+        GoogleCodeExchangeView.as_view(),
+        name="google_exchange_code",
     ),
 ]

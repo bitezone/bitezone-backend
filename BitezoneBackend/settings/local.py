@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+REST_USE_JWT = True
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
