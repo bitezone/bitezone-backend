@@ -43,3 +43,5 @@ node_modules/
 *.egg-info/
 dist/
 build/
+
+./logs.md

@@ -23,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-from BitezoneBackend.settings import get_secret
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -58,7 +57,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = ["moxie.cs.oswego.edu:7779"]
+CORS_ALLOWED_ORIGINS = ["http://moxie.cs.oswego.edu:7779"]
 
 ROOT_URLCONF = "BitezoneBackend.urls"
 
