@@ -14,13 +14,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 
 from routers import router
 
+from accounts.views import GoogleLogin, GoogleLoginCallBackView
+from django.urls import include, path, re_path
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("api/", include((router.urls, 'core_api'), namespace="core_api")),
+    path("admin/", admin.site.urls),
+    path("api/", include((router.urls, "core_api"), namespace="core_api")),
     # path("api-auth/", include('rest_framework.urls'))
+    path("api/v1/auth/", include("dj_rest_auth.urls")),
+    re_path(r"^api/v1/auth/accounts/", include("allauth.urls")),
+    path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/v1/auth/google/", GoogleLogin.as_view(), name="google_login"),
+    path(
+        "api/v1/auth/google/callback/",
+        GoogleLoginCallBackView.as_view(),
+        name="google_login_callback",
+    ),
 ]
