@@ -17,6 +17,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,6 +54,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "dj_rest_auth.registration",
+    "accounts"
 ]
 
 SITE_ID = 1

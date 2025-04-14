@@ -17,6 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from accounts.views import CustomConfirmEmailView
 
 from routers import router
 
@@ -25,5 +26,10 @@ urlpatterns = [
     path("api/", include((router.urls, "core_api"), namespace="core_api")),
     path("dj-rest-auth/", include("dj_rest_auth.urls")),
     path("api/v1/auth/", include("dj_rest_auth.urls")),
-    path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls'))
+    path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path(
+        "api/v1/auth/registration/account-confirm-email/<str:key>/",
+        CustomConfirmEmailView.as_view(),
+        name="account_confirm_email",
+    ),
 ]
