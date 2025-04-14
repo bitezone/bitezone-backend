@@ -1,10 +1,12 @@
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+import requests
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import urllib
+import os
 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
@@ -43,20 +45,20 @@ class GoogleLogin(SocialLoginView):
         profile_url = "https://www.googleapis.com/oauth2/v2/userinfo"
 
     adapter_class = GoogleAdapter
-    callback_url = "http://localhost:8000/users/code"
+    callback_url = os.environ.get("GOOGLE_OAUTH_CALLBACK_URL")
     client_class = CustomGoogleOAuth2Client
 
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def CodeView(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    print("callback triggered")
+
     if request.method == "GET":
         code = urllib.parse.unquote(request.query_params["code"])
-        print(code)
+
+        token_endpoint_url = os.environ.get("BACKEND_URL") + "/users/code"
+        response = requests.post(url=token_endpoint_url, data={"code": code})
+
         return Response(
             {
                 "code": code,
