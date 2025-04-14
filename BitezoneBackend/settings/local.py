@@ -17,8 +17,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
-
+FRONTEND_URL = os.environ.get("FRONTEND_URL")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,7 +86,10 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 ACCOUNT_EMAIL_VERIFICATION = "mandatory" # Require email confirmation
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True  # No need to sent POST request to confirmation link
-LOGIN_URL = "/admin"
+# LOGIN_URL = "/admin"
+
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = f"{FRONTEND_URL}/login" 
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = f"{FRONTEND_URL}/login"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -178,4 +180,4 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-EEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

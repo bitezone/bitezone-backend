@@ -16,9 +16,9 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
-from accounts.views import CustomConfirmEmailView
-
+from django.urls import path, include, re_path
+from django.views.generic import RedirectView
+import os
 from routers import router
 
 urlpatterns = [
@@ -27,9 +27,11 @@ urlpatterns = [
     path("dj-rest-auth/", include("dj_rest_auth.urls")),
     path("api/v1/auth/", include("dj_rest_auth.urls")),
     path("api/v1/auth/registration/", include("dj_rest_auth.registration.urls")),
-    path(
-        "api/v1/auth/registration/account-confirm-email/<str:key>/",
-        CustomConfirmEmailView.as_view(),
+    re_path(
+        r"^account-confirm-email/(?P<key>[-:\w]+)/$",
+        RedirectView.as_view(
+            url=f"{os.getenv("FRONTEND_URL")}/user/login"
+        ),
         name="account_confirm_email",
     ),
 ]
