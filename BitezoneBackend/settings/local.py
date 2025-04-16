@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth.registration",
     "allauth.socialaccount.providers.google",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 SITE_ID = 1
@@ -63,7 +64,6 @@ ACCOUNT_SIGNUP_FIELDS = ["username", "email*", "password1*", "password2*"]
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        # "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAdminUser",),
 }

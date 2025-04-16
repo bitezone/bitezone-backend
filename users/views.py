@@ -3,6 +3,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 import requests
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -51,7 +52,7 @@ class GoogleLogin(SocialLoginView):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def CodeView(request):
 
     if request.method == "GET":
@@ -70,16 +71,15 @@ def CodeView(request):
         )
 
 
-# @api_view(["GET"])
-# @permission_classes([AllowAny])
-# def get_current_user(request : Request):
-#     user = request.user
-#     print(request.user)
-#     print("Hello world")
-#     return Response(
-#         {
-#             "id": user.id,
-#             "email": user.email,
-#             "name": user.get_full_name() or user.username,
-#         }
-#     )
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def UserLogOutView(request: Request):
+    print("request", request.data)
+    try:
+        refresh_token = request.data.get("refresh")
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+
+        return Response({"detail": "Successfully logged out."})
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
