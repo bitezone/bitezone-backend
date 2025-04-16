@@ -2,9 +2,10 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 import requests
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.request import Request
 import urllib
 import os
 
@@ -39,12 +40,12 @@ class CustomGoogleOAuth2Client(OAuth2Client):
 
 
 class GoogleLogin(SocialLoginView):
-    class GoogleAdapter(GoogleOAuth2Adapter):
-        access_token_url = "https://oauth2.googleapis.com/token"
-        authorize_url = "https://accounts.google.com/o/oauth2/v2/auth"
-        profile_url = "https://www.googleapis.com/oauth2/v2/userinfo"
+    # class GoogleAdapter(GoogleOAuth2Adapter):
+    #     access_token_url = "https://oauth2.googleapis.com/token"
+    #     authorize_url = "https://accounts.google.com/o/oauth2/v2/auth"
+    #     profile_url = "https://www.googleapis.com/oauth2/v2/userinfo"
 
-    adapter_class = GoogleAdapter
+    adapter_class = GoogleOAuth2Adapter
     callback_url = os.environ.get("GOOGLE_OAUTH_CALLBACK_URL")
     client_class = CustomGoogleOAuth2Client
 
@@ -67,3 +68,18 @@ def CodeView(request):
                 + "' http://localhost:8000/users/authenticate/google/",
             }
         )
+
+
+# @api_view(["GET"])
+# @permission_classes([AllowAny])
+# def get_current_user(request : Request):
+#     user = request.user
+#     print(request.user)
+#     print("Hello world")
+#     return Response(
+#         {
+#             "id": user.id,
+#             "email": user.email,
+#             "name": user.get_full_name() or user.username,
+#         }
+#     )
