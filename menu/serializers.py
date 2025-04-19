@@ -58,27 +58,28 @@ class MenuSerializer(serializers.ModelSerializer):
 
     def get_menu_items(self, menu):
         request = self.context.get("request")
-        exclude_allergy_id = (
-            request.query_params.get("exclude_allergy") if request else None
-        )
+        exclude_allergy_param = request.query_params.get("exclude_allergy") if request else None
+        exclude_allergy_ids = []
+
+        if exclude_allergy_param:
+            exclude_allergy_ids = [
+                int(x.strip()) for x in exclude_allergy_param.split(",") if x.strip().isdigit()
+            ]
 
         all_associations = MenuItemsAssociation.objects.filter(menu=menu)
 
-        if exclude_allergy_id:
+        if exclude_allergy_ids:
             menu_item_ids_with_allergy = MenuItemsAllergiesAssociation.objects.filter(
-                allergy_id=exclude_allergy_id
+                allergy_id__in=exclude_allergy_ids
             ).values_list("menu_item_id", flat=True)
 
-            filtered_associations = all_associations.exclude(
+            associations = all_associations.exclude(
                 menu_item_id__in=menu_item_ids_with_allergy
             )
-            associations = filtered_associations
         else:
             associations = all_associations
 
         return MenuItemInMenuSerializer(associations, many=True).data
-
-
 class MenuBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menus
