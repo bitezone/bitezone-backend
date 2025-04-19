@@ -1,6 +1,10 @@
 from rest_framework import viewsets
-from .models import Menus
-from .serializers import MenuSerializer, MenuBasicSerializer
+from .models import MenuItems, Menus
+from .serializers import (
+    MenuItemNutritionSerializer,
+    MenuSerializer,
+    MenuBasicSerializer,
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,15 +16,14 @@ class MenuViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet for retrieving menus with their associated menu items.
     """
+
     permission_classes = [AllowAny]
 
     queryset = Menus.objects.all()
     serializer_class = MenuSerializer
 
     def get_queryset(self):
-
         queryset = Menus.objects.all()
-
         date_str = self.request.query_params.get("date", None)
         meal_time = self.request.query_params.get("meal_time", None)
         meal_location = self.request.query_params.get("meal_location", None)
@@ -115,7 +118,16 @@ class MenuViewSet(viewsets.ReadOnlyModelViewSet):
 
         menus = menus.filter(meal_location=found_location)
 
-        # Use the basic serializer that doesn't include menu items
         serializer = MenuBasicSerializer(menus, many=True)
 
         return Response(serializer.data)
+
+
+class MenuItemViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows menu items to be viewed.
+    """
+
+    permission_classes = [AllowAny]
+    queryset = MenuItems.objects.all()
+    serializer_class = MenuItemNutritionSerializer
