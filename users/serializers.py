@@ -36,19 +36,9 @@ class MealSessionSerializer(serializers.ModelSerializer):
             "meal_items",
             "total_calories",
         ]
-        read_only_fields = ["total_calories"]  # So user can't manually POST it
+        read_only_fields = ["total_calories"] 
 
     def create(self, validated_data):
-        """Payload example
-                {
-          "date": "2025-04-20T12:00:00Z",
-          "meal_time": "lunch",
-          "meal_location": "Lakeside",
-          "meal_items": [
-            { "menu_item_id": 5, "quantity": 2 },
-            { "menu_item_id": 7, "quantity": 1 }
-          ]
-        }"""
         meal_items_data = validated_data.pop("meal_items")
 
         total = 0

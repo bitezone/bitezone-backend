@@ -6,7 +6,7 @@ User = get_user_model()
 
 class MealSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meal_sessions")
-    date = models.DateTimeField()
+    date = models.DateField()
     meal_time = models.CharField(max_length=100)
     meal_location = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

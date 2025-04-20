@@ -1,13 +1,17 @@
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from django.utils.dateparse import parse_datetime
 
 from rest_framework import generics, permissions
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.request import Request
+
+from menu.models import Menus
 
 from .models import MealSession
 from .serializers import MealSessionSerializer
@@ -96,7 +100,23 @@ class MealSessionListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return MealSession.objects.filter(user=self.request.user).order_by(
+
+        user = self.request.user
+        queryset = MealSession.objects.filter(user=user)
+
+        date_str = self.request.query_params.get("date", None)
+
+        if date_str:
+            parsed_date = parse_datetime(date_str)
+            if not parsed_date:
+                raise ValidationError(
+                    {
+                        "error": "Invalid date format. Use ISO 8601 format: 'YYYY-MM-DDTHH:MM:SSZ'"
+                    }
+                )
+            queryset = queryset.filter(date=parsed_date.date())
+
+        return queryset.order_by(
             "-date", "-created_at"
         )
 
