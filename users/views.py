@@ -1,12 +1,18 @@
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
-import requests
+
+from rest_framework import generics, permissions
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.request import Request
+
+from .models import MealSession
+from .serializers import MealSessionSerializer
+
+import requests
 import urllib
 import os
 
@@ -83,3 +89,16 @@ def UserLogOutView(request: Request):
         return Response({"detail": "Successfully logged out."})
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+
+
+class MealSessionListCreateView(generics.ListCreateAPIView):
+    serializer_class = MealSessionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return MealSession.objects.filter(user=self.request.user).order_by(
+            "-date", "-created_at"
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

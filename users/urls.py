@@ -18,4 +18,7 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     # path("accounts/", include("allauth.urls")),
+    path(
+        "meal-logs/", MealSessionListCreateView.as_view(), name="meal-log-list-create"
+    ),
 ]

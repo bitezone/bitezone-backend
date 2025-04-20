@@ -55,9 +55,10 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "allauth.socialaccount.providers.google",
     "rest_framework_simplejwt.token_blacklist",
+    "users"
 ]
 
-SITE_ID = 1
+SITE_ID = 2 
 
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["username", "email*", "password1*", "password2*"]
@@ -74,11 +75,11 @@ REST_AUTH = {
     "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
 }
 
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-#     "BLACKLIST_AFTER_ROTATION": True,
-# }
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "BLACKLIST_AFTER_ROTATION": True,
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
