@@ -1,9 +1,10 @@
 from rest_framework import viewsets
-from .models import MenuItems, Menus
+from .models import MenuItems, Menus, Allergies
 from .serializers import (
     MenuItemNutritionSerializer,
     MenuSerializer,
     MenuBasicSerializer,
+    AllergySerializer
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
@@ -131,3 +132,8 @@ class MenuItemViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     queryset = MenuItems.objects.all()
     serializer_class = MenuItemNutritionSerializer
+
+class AllergyViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Allergies.objects.all()
+    serializer_class = AllergySerializer

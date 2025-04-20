@@ -80,6 +80,8 @@ class MenuSerializer(serializers.ModelSerializer):
             associations = all_associations
 
         return MenuItemInMenuSerializer(associations, many=True).data
+    
+    
 class MenuBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menus
