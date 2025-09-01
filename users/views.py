@@ -74,9 +74,7 @@ def CodeView(request):
         return Response(
             {
                 "code": code,
-                "curl": "curl -H 'code "
-                + code
-                + "' http://localhost:8000/users/authenticate/google/",
+                "curl": f"curl -H 'code {code}' {token_endpoint_url}/users/authenticate/google/",
             }
         )
 
@@ -116,9 +114,7 @@ class MealSessionListCreateView(generics.ListCreateAPIView):
                 )
             queryset = queryset.filter(date=parsed_date.date())
 
-        return queryset.order_by(
-            "-date", "-created_at"
-        )
+        return queryset.order_by("-date", "-created_at")
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

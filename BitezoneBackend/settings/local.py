@@ -55,10 +55,12 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
     "allauth.socialaccount.providers.google",
     "rest_framework_simplejwt.token_blacklist",
-    "users"
+    "users",
+    "django_extensions",
+    "django_prometheus",
 ]
 
-SITE_ID = 2 
+SITE_ID = 2
 
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["username", "email*", "password1*", "password2*"]
@@ -82,6 +84,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -92,6 +95,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 CORS_ALLOWED_ORIGINS = ["*"]
