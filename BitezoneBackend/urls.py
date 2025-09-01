@@ -21,9 +21,6 @@ from django.urls import path, include
 from routers import router
 from users.views import GoogleLogin
 
-from django_prometheus.exports import ExportToDjangoView
-from django.contrib.admin.views.decorators import staff_member_required
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include((router.urls, "core_api"), namespace="core_api")),
@@ -31,5 +28,4 @@ urlpatterns = [
     # path("dj-rest-auth/", include("dj_rest_auth.urls")),
     # path("accounts/", include("allauth.urls")),
     path("users/", include("users.urls", namespace="accounts")),
-    path("metrics/", ExportToDjangoView)
 ]
