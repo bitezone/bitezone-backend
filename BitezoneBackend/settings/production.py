@@ -29,10 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "3.235.154.240"]
+ALLOWED_HOSTS = ["3.235.154.240", "api.oswegodining.com"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.oswegodining.com",
+]
 
 # Application definition
 
@@ -59,7 +62,7 @@ INSTALLED_APPS = [
     "users",
 ]
 
-SITE_ID = 2
+SITE_ID = 3
 
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["username", "email*", "password1*", "password2*"]
@@ -95,10 +98,11 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
+# settings.py
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://3.235.154.240:3000",
+    "https://oswegodining.com",
+    "https://www.oswegodining.com",
+    "https://bitezone-frontend.vercel.app"  # Vercel frontend
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -174,6 +178,9 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     }
 }
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 
 # Internationalization

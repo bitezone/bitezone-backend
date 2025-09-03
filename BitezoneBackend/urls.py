@@ -22,7 +22,7 @@ from routers import router
 from users.views import GoogleLogin
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("sonephyo-admin/", admin.site.urls),
     path("api/", include((router.urls, "core_api"), namespace="core_api")),
     # path("api-auth/", include('rest_framework.urls'))
     # path("dj-rest-auth/", include("dj_rest_auth.urls")),
